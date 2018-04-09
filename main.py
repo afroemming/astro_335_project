@@ -3,6 +3,7 @@ from sys import exit
 import requests
 import numpy as np
 import h5py
+import illustris_python as il
 
 MILKY_WAY_MASS = 1.30e12 / 1e10 * 0.704 # Solar Masses. 1.30e12 +/- 0.30e12
 # Source: McMillan, Paul J. (February 11, 2017). "The mass distribution and
@@ -14,7 +15,9 @@ MILKY_WAY_MASS = 1.30e12 / 1e10 * 0.704 # Solar Masses. 1.30e12 +/- 0.30e12
 NEAR_MWM_DEVIATION = 0.30e12  / 1e10 * 0.704
 API_KEY='874387f0fbf3b68439b727ae5cdde978'
 BASE_URL = 'http://www.illustris-project.org/api/'
-SIM_NAME = 'Illustris-1'
+SIM_NAME = 'Illustris-3' #We'll probably want to use Illustris-1, but that
+# dataset is superbig, so I'll use Illustris-3 for now
+BASE_PATH = "."
 
 def get(path, params=None):
     """Helper function to access API endpoints"""
@@ -51,23 +54,20 @@ def get_subhalos_in_mass_range(target_mass, deviation,
 
   return subhalos
 
-
 def test_merger_explore():
-    test_halo = get(get_subhalos_in_mass_range(MILKY_WAY_MASS, NEAR_MWM_DEVIATION)['results'][0]['url'])
+    test_tree = il.sublink.loadTree(BASE_PATH, 135, 15, fields='NextProgenitorID')
+    print test_tree.tolist()
+    # The NextProgenitorID field for the selected z=0 subhalo gives the most
+    # massive galaxy that merged with the selected subhalo for each snapshot.
+    # We fetch the sublink tree for that subhalo and look and the same field
+    # to find the next most massive subhalo and repeat until we get the id -1
+    # indicatiing that there are no more subhalos that merged with the selected
+    # subhalo in the current snapshot.  Each of these IDs are recorded in a
+    # list, so that list gives the IDs of all subhalos that merged with the
+    # primary subhalo in a snapshot.  This process is repeated for each snapshot
+    # that the primary existed in, and all of these lists are arranged into a
+    # dictionary that has as keys the snapshot number each merger occurred in
 
-    try:
-        f = h5py.File("sublink_mpb_13.hdf5",'r')
-    except:
-        mpb1 = get(test_halo['trees']['sublink_mpb'] )
-        f = h5py.File(mpb1,'r')
-    #print("keys\n", list(f.keys()))
-    #print("SubhaloID", list(f["SubhaloID"]))
-    print("SnapNum", list(f["SnapNum"]))
-    print("FirstProgenitorID", f["FirstProgenitorID"][:])
-    #print("NextProgenitorID", f["NextProgenitorID"][:])
-    #print(list(f["RootDescendantID"]))
-    print(len(f["SnapNum"]))
-    print(f['MainLeafProgenitorID'][:])
 
 if __name__=="__main__":
     test_merger_explore()
