@@ -4,6 +4,7 @@ import requests
 import numpy as np
 import h5py
 import illustris_python as il
+import matplotlib.pyplot as plt
 
 MILKY_WAY_MASS = 1.30e12 / 1e10 * 0.704 # Solar Masses. 1.30e12 +/- 0.30e12
 # Source: McMillan, Paul J. (February 11, 2017). "The mass distribution and
@@ -41,32 +42,59 @@ def get(path, params=None):
 
 def get_subhalos_in_mass_range(target_mass, deviation,
                                z = 0, limit=105):
-  """
-  Given a mass and deviation in group catalog units, return a search results for
-  subhalos within that for a optionially specified z.
-  """
-  search_query = "?mass__gt=" + str(target_mass - deviation) + "&mass__lt=" +  \
+    """
+    Given a mass and deviation in group catalog units, return a search results for
+    subhalos within that for a optionially specified z.
+    """
+    search_query = "?mass__gt=" + str(target_mass - deviation) + "&mass__lt=" +  \
                   str(target_mass + deviation)
-  url = "http://www.illustris-project.org/api/" + '/' + SIM_NAME + '/' + \
-  "snapshots/z=" + str(z) + "/subhalos/" + search_query + "&limit=" + str(limit)
+    url = "http://www.illustris-project.org/api/" + '/' + SIM_NAME + '/' + \
+    "snapshots/z=" + str(z) + "/subhalos/" + search_query + "&limit=" + str(limit)
 
-  subhalos = get(url)
+    subhalos = get(url)
 
-  return subhalos
+    return subhalos
 
-def test_merger_explore():
-    test_tree = il.sublink.loadTree(BASE_PATH, 135, 15, fields='NextProgenitorID')
-    print test_tree.tolist()
-    # The NextProgenitorID field for the selected z=0 subhalo gives the most
-    # massive galaxy that merged with the selected subhalo for each snapshot.
-    # We fetch the sublink tree for that subhalo and look and the same field
-    # to find the next most massive subhalo and repeat until we get the id -1
-    # indicatiing that there are no more subhalos that merged with the selected
-    # subhalo in the current snapshot.  Each of these IDs are recorded in a
-    # list, so that list gives the IDs of all subhalos that merged with the
-    # primary subhalo in a snapshot.  This process is repeated for each snapshot
-    # that the primary existed in, and all of these lists are arranged into a
-    # dictionary that has as keys the snapshot number each merger occurred in
+def get_subhalo_merger_tree(id, fields=[]):
+    """
+    Given a sublink id and a list of fields, return a dictionary with keys
+    snapshots where a merger occured and with values the subhalo ID and requested
+    fields of each subhalo that merged with the mpb of the given subhalo at that
+    snapshot.
+    """
+    # TODO: Determine tree a subhalo is in given its sublink ID
+    # TODO: Given a list of fields,return those fields associated with
+    # each
+
+    f = h5py.File("trees/SubLink/tree_extended.0.hdf5", 'r')
+    # Each index among the dataset goes with single subhalo. SubhaloID's are
+    # contiguous, and the indexes are releated to SubhaloID's by the SubhaloID
+    # of the first halo in the file + the index for a given subhalo
+    first_sh_id = f['SubhaloID'][0]
+    # n is would be the input for a function that takes this code
+    n = 0
+    # This dictionary will have as keys a Next Progenitor associated with a
+    # a First Progenitor and
+    mergers = {}
+    first_progenitor_ID = f['FirstProgenitorID'][n]
+    # Move through data file, following main branch until there earlist progenitor
+    while f['FirstProgenitorID'][n] != -1:
+        # Move through next progenitor until we reach the last one
+        while f['NextProgenitorID'][n] != -1:
+            # Try to add ID to dictionary, create list associated with ID if
+            # key does not exist
+            try:
+                mergers[f['SnapNum']][n].append(f['NextProgenitorID'][n])
+            except:
+                print n
+                mergers[f['SnapNum'][n]] = [f['NextProgenitorID'][n]]
+            # move to next next progenitor
+            n = f['NextProgenitorID'][n] - first_sh_id
+        # move along main branch
+        n = f['FirstProgenitorID'][first_progenitor_ID] - first_sh_id
+        first_progenitor_ID = n
+    return mergers
+
 
 
 if __name__=="__main__":
