@@ -94,8 +94,4 @@ def get_subhalo_merger_tree(id, fields=[]):
         n = f['FirstProgenitorID'][first_progenitor_ID] - first_sh_id
         first_progenitor_ID = n
     return mergers
-
-
-
-if __name__=="__main__":
-    test_merger_explore()
+    
