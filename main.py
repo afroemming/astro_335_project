@@ -58,7 +58,8 @@ def get_subhalos_in_mass_range(target_mass, deviation,
 def get_subhalo_merger_tree(id, fields=[]):
     """
     Given a sublink id and a list of fields, return a dictionary with keys
-    snapshots where a merger occured and with values the subhalo ID and requested
+    snapshots where a merger occured and with values the ID
+    of the subhalo along the mpb, followed by the subhalo ID and requested
     fields of each subhalo that merged with the mpb of the given subhalo at that
     snapshot.
     """
@@ -86,7 +87,6 @@ def get_subhalo_merger_tree(id, fields=[]):
                 mergers[f['SnapNum'][n]].append(f['NextProgenitorID'][n])
                 n = f['NextProgenitorID'][n] - first_sh_id
             except:
-                print(n)
                 n = f['NextProgenitorID'][n] - first_sh_id
         # move along main branch
         n = f['FirstProgenitorID'][first_progenitor_ID] - first_sh_id
