@@ -58,21 +58,18 @@ def get_subhalos_in_mass_range(target_mass, deviation,
 def get_subhalo_merger_tree(id, fields=[]):
     """
     Given a sublink id and a list of fields, return a dictionary with keys
-    snapshots where a merger occured and with values the ID
-    of the subhalo along the mpb, followed bythe subhalo ID and requested
-    fields of each subhalo that merged with the mpb of the given subhalo at that
+    snapshots where a merger occured and with values tuples with the ID and
+    mass of the subhalo along the mpb, followed bythe subhalo ID and mass
+    of each subhalo that merged with the mpb of the given subhalo at that
     snapshot.
     """
     # TODO: Determine tree a subhalo is in given its sublink ID
-    # TODO: Given a list of fields,return those fields associated with
-    # each
 
     f = h5py.File("trees/SubLink/tree_extended.0.hdf5", 'r')
     # Each index among the dataset goes with single subhalo. SubhaloID's are
     # contiguous, and the indexes are releated to SubhaloID's by the SubhaloID
     # of the first halo in the file + the index for a given subhalo
     first_sh_id = f['SubhaloID'][0]
-    # n is would be the input for a function that takes this code
     n = id
     # This dictionary will have as keys a Next Progenitor associated with a
     # a First Progenitor and
@@ -80,11 +77,11 @@ def get_subhalo_merger_tree(id, fields=[]):
     first_progenitor_ID = f['FirstProgenitorID'][n]
     # Move through data file, following main branch until there earlist progenitor
     while f['FirstProgenitorID'][n] != -1:
-        mergers[f['SnapNum'][n]] = [n]
+        mergers[f['SnapNum'][n]] = [(n, f['Mass'][n])]
         # Move through next progenitor until we reach the last one
         while f['NextProgenitorID'][n] != -1:
             try:
-                mergers[f['SnapNum'][n]].append(f['NextProgenitorID'][n])
+                mergers[f['SnapNum'][n]].append((f['NextProgenitorID'][n], f['Mass'][n]))
                 n = f['NextProgenitorID'][n] - first_sh_id
             except:
                 n = f['NextProgenitorID'][n] - first_sh_id
@@ -92,5 +89,5 @@ def get_subhalo_merger_tree(id, fields=[]):
         n = f['FirstProgenitorID'][first_progenitor_ID] - first_sh_id
         first_progenitor_ID = n
     return mergers
-    
-print(get_subhalo_merger_tree(60))
+
+print(get_subhalo_merger_tree(5))
