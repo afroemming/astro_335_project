@@ -79,19 +79,18 @@ def get_subhalo_merger_tree(id, fields=[]):
     first_progenitor_ID = f['FirstProgenitorID'][n]
     # Move through data file, following main branch until there earlist progenitor
     while f['FirstProgenitorID'][n] != -1:
+        mergers[f['SnapNum'][n]] = [n]
         # Move through next progenitor until we reach the last one
         while f['NextProgenitorID'][n] != -1:
-            # Try to add ID to dictionary, create list associated with ID if
-            # key does not exist
             try:
-                mergers[f['SnapNum']][n].append(f['NextProgenitorID'][n])
+                mergers[f['SnapNum'][n]].append(f['NextProgenitorID'][n])
+                n = f['NextProgenitorID'][n] - first_sh_id
             except:
-                print n
-                mergers[f['SnapNum'][n]] = [f['NextProgenitorID'][n]]
-            # move to next next progenitor
-            n = f['NextProgenitorID'][n] - first_sh_id
+                print(n)
+                n = f['NextProgenitorID'][n] - first_sh_id
         # move along main branch
         n = f['FirstProgenitorID'][first_progenitor_ID] - first_sh_id
         first_progenitor_ID = n
     return mergers
     
+print(get_subhalo_merger_tree(60))
