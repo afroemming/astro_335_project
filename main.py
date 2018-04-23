@@ -90,4 +90,18 @@ def get_subhalo_merger_tree(id, fields=[]):
         first_progenitor_ID = n
     return mergers
 
-print(get_subhalo_merger_tree(5))
+def get_merger_fractions(id):
+    """ 
+    Given a subhalo id, return a dict with keys the SnapNum where the 
+    subhalo existed, and as values, the merger fractions of each merger
+    """
+    mtree = get_subhalo_merger_tree(id)
+    mass_mtree = {}
+    for snapNum in mtree:
+        mass_mtree[snapNum] = []
+        for merger in mtree[snapNum][1:]:
+            mass_mtree[snapNum].append(merger[1]/mtree[snapNum][0][1])
+
+    return mass_mtree
+
+print(get_merger_fractions(1))
