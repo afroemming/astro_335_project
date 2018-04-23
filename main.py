@@ -59,7 +59,7 @@ def get_subhalo_merger_tree(id, fields=[]):
     """
     Given a sublink id and a list of fields, return a dictionary with keys
     snapshots where a merger occured and with values the ID
-    of the subhalo along the mpb, followed by the subhalo ID and requested
+    of the subhalo along the mpb, followed bythe subhalo ID and requested
     fields of each subhalo that merged with the mpb of the given subhalo at that
     snapshot.
     """
@@ -73,7 +73,7 @@ def get_subhalo_merger_tree(id, fields=[]):
     # of the first halo in the file + the index for a given subhalo
     first_sh_id = f['SubhaloID'][0]
     # n is would be the input for a function that takes this code
-    n = 0
+    n = id
     # This dictionary will have as keys a Next Progenitor associated with a
     # a First Progenitor and
     mergers = {}
