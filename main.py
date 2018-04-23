@@ -81,7 +81,7 @@ def get_subhalo_merger_tree(id, fields=[]):
         # Move through next progenitor until we reach the last one
         while f['NextProgenitorID'][n] != -1:
             try:
-                mergers[f['SnapNum'][n]].append((f['NextProgenitorID'][n], f['Mass'][n]))
+                mergers[f['SnapNum'][n]].append((f['NextProgenitorID'][n], f['Mass'][f['NextProgenitorID'][n]]))
                 n = f['NextProgenitorID'][n] - first_sh_id
             except:
                 n = f['NextProgenitorID'][n] - first_sh_id
