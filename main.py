@@ -1,5 +1,5 @@
  # -*- coding: utf-8 -*-
-from sys import exit
+from sys import exit, argv
 import requests
 import numpy as np
 import h5py
@@ -19,6 +19,17 @@ BASE_URL = 'http://www.illustris-project.org/api/'
 SIM_NAME = 'Illustris-3' #We'll probably want to use Illustris-1, but that
 # dataset is superbig, so I'll use Illustris-3 for now
 BASE_PATH = "."
+
+if __name__ == "__main__":
+    # Read commandline arguments
+    try:
+        BASE_PATH = argv[1]
+    except IndexError:
+        pass
+    try: 
+        SIM_NAME = argv[2]
+    except IndexError:
+        pass
 
 def get(path, params=None):
     """Helper function to access API endpoints"""
