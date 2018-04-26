@@ -76,16 +76,19 @@ def get_subhalo_merger_tree(id, fields=[]):
     """
     # TODO: Determine tree a subhalo is in given its sublink ID
 
-    f = h5py.File("trees/SubLink/tree_extended.0.hdf5", 'r')
+    f = il.sublink.loadTree(BASE_PATH, 135, id)
     # Each index among the dataset goes with single subhalo. SubhaloID's are
     # contiguous, and the indexes are releated to SubhaloID's by the SubhaloID
     # of the first halo in the file + the index for a given subhalo
     first_sh_id = f['SubhaloID'][0]
-    n = id
+    #print(first_sh_id)
+    n = 0
     # This dictionary will have as keys a Next Progenitor associated with a
     # a First Progenitor and
     mergers = {}
-    first_progenitor_ID = f['FirstProgenitorID'][n]
+    
+    
+    first_progenitor_ID = f['FirstProgenitorID'][n] - first_sh_id
     # Move through data file, following main branch until there earlist progenitor
     while f['FirstProgenitorID'][n] != -1:
         mergers[f['SnapNum'][n]] = [(n, f['Mass'][n])]
@@ -96,10 +99,14 @@ def get_subhalo_merger_tree(id, fields=[]):
                 n = f['NextProgenitorID'][n] - first_sh_id
             except:
                 n = f['NextProgenitorID'][n] - first_sh_id
+       
         # move along main branch
-        n = f['FirstProgenitorID'][first_progenitor_ID] - first_sh_id
+        if f['FirstProgenitorID'][first_progenitor_ID] != -1:
+            n = f['FirstProgenitorID'][first_progenitor_ID] - first_sh_id
         first_progenitor_ID = n
     return mergers
+
+#print(get_subhalo_merger_tree(900))
 
 def get_merger_fractions(id):
     """ 
@@ -115,4 +122,11 @@ def get_merger_fractions(id):
 
     return mass_mtree
 
-print(get_merger_fractions(1))
+def test_get_merger_fraction():
+    for i in range(600,1200):
+        a = get_merger_fractions(i)
+        for j in a:
+            if len(a[j]) != 0:
+                print(i, a[j])
+
+#test_get_merger_fraction()
