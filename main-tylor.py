@@ -71,17 +71,17 @@ def get_subhalo_merger_tree(id, fields=[]):
     """
     # TODO: Determine tree a subhalo is in given its sublink ID
     chunkNum = return_tree_chunk_number(id)
-    print(chunkNum)
+    #print(chunkNum)
     #treeFile = "tree_extended.%d.hdf5" % chunkNum
     #path = os.path.join("E:", "Astro 335 Project", "Illustris-3", "trees", "SubLink", treeFile)
-    f = h5py.File("E:/Astro 335 Project/Illustris-3/trees/SubLink/tree_extended." + str(chunkNum) + ".hdf5", 'r')
+    f = h5py.File("E:/Astro 335 Project/Illustris-3/trees/SubLink/tree_extended.0.hdf5", 'r')
     #f = h5py.File(path, 'r')
 
     # Each index among the dataset goes with single subhalo. SubhaloID's are
     # contiguous, and the indexes are releated to SubhaloID's by the SubhaloID
     # of the first halo in the file + the index for a given subhalo
     first_sh_id = f['SubhaloID'][0]
-    n = id - offsets[chunkNum]
+    n = id
     # This dictionary will have as keys a Next Progenitor associated with a
     # a First Progenitor and
     mergers = {}
@@ -115,19 +115,20 @@ def get_merger_fractions(id):
 
     return mass_mtree
 
-def i_like_good_pussy_and_i_like_good_trees(id):
+def get_mass_hist_for_subhalo(id):
 
     ratio_mass_list = []
     mass_dict = get_merger_fractions(id)
     for snapNum in mass_dict:
         for merger in mass_dict[snapNum]:
             ratio_mass_list.append(merger)
-    return ratio_mass_list
+    
+    n, bins, patches = plt.hist(ratio_mass_list, bins = 10000, range = (0,.001), histtype = 'step')
+    plt.show()
 
 #print(get_subhalos_in_mass_range(MILKY_WAY_MASS, NEAR_MWM_DEVIATION))
 
-#n, bins, patches = plt.hist(i_like_good_pussy_and_i_like_good_trees(1), bins = 10000, range = (0,.001), histtype = 'step')
-#plt.show()
+
 #print(i_like_good_pussy_and_i_like_good_trees(1))
 #print(get_subhalo_merger_tree(1))
 #print(get_merger_fractions(1))
@@ -194,6 +195,6 @@ def return_tree_chunk_number(id):
     for i in range(len(offsets)):
         if id >= offsets[i] and id < offsets[i+1]:
             return i
-print(get_subhalo_merger_tree(300000))
+get_mass_hist_for_subhalo(2)
         
 
