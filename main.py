@@ -72,35 +72,37 @@ def get_subhalo_merger_tree(id, fields=[]):
     # TODO: Determine tree a subhalo is in given its sublink ID
 
     f = il.sublink.loadTree(BASE_PATH, 135, id)
-    # Each index among the dataset goes with single subhalo. SubhaloID's are
-    # contiguous, and the indexes are releated to SubhaloID's by the SubhaloID
-    # of the first halo in the file + the index for a given subhalo
-    first_sh_id = f['SubhaloID'][0]
-    #print(first_sh_id)
+    id0 = f['SubhaloID'][0] # ID of the first subhalo in the file, subtract
+    # this from an ID to index in tree
     n = 0
-    # This dictionary will have as keys a Next Progenitor associated with a
-    # a First Progenitor and
+    mpb_n = 0
     mergers = {}
-    
-    
-    first_progenitor_ID = f['FirstProgenitorID'][n] - first_sh_id
-    # Move through data file, following main branch until there earlist progenitor
-    while f['FirstProgenitorID'][n] != -1:
-        mergers[f['SnapNum'][n]] = [(n, f['Mass'][n])]
-        # Move through next progenitor until we reach the last one
-        while f['NextProgenitorID'][n] != -1:
-            try:
-                mergers[f['SnapNum'][n]].append((f['NextProgenitorID'][n], f['Mass'][f['NextProgenitorID'][n]]))
-                n = f['NextProgenitorID'][n] - first_sh_id
-            except:
-                n = f['NextProgenitorID'][n] - first_sh_id
-       
-        # move along main branch
-        if f['FirstProgenitorID'][first_progenitor_ID] != -1: # If it is -1,
-            # it is telling us what there are no more progenitors, not the 
-            # location of the next
-            n = f['FirstProgenitorID'][first_progenitor_ID] - first_sh_id
-        first_progenitor_ID = n
+    #Walk through tree until FirstProgenitorID == -1, i.e., we've reached the
+    #earliest step where the subhalos mpb exists
+    while mpb_n != -1:
+        print(mpb_n)
+        # Store mass and id of current subhalo along mpb
+        if not f['SnapNum'][mpb_n] in mergers.keys():
+            mergers[f['SnapNum'][mpb_n]] = [(f['SubhaloID'][mpb_n], f['Mass'][mpb_n])]
+        else:
+            mergers[f['SnapNum'][mpb_n]].insert(0, (f['SubhaloID'][mpb_n], f['Mass'][mpb_n]))
+
+        #Find all next progenitors
+        n = f['NextProgenitorID'][mpb_n]
+        if n != -1:
+            n -= id0
+        while n != -1:
+            if f['SnapNum'][n] in mergers.keys():
+                mergers[f['SnapNum'][n]].append((f['SubhaloID'][n], f['Mass'][n]))
+            else:
+                mergers[f['SnapNum'][n]] = [(f['SubhaloID'][n], f['Mass'][n])]
+            n = f['NextProgenitorID'][n]
+            if n != -1:
+                n -= id0
+        # Move to the next subhalo along the mpb
+        mpb_n = f['FirstProgenitorID'][mpb_n]
+        if mpb_n != -1:
+            mpb_n -= id0
     return mergers
 
 #print(get_subhalo_merger_tree(900))
@@ -126,4 +128,5 @@ def test_get_merger_fraction():
             if len(a[j]) != 0:
                 print(i, a[j])
 
-test_get_merger_fraction()
+from pprint import pprint
+pprint(get_subhalo_merger_tree(1))
