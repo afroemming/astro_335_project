@@ -1,5 +1,5 @@
 from os import mkdir,system, chdir 
-from os.path import join, getcwd
+from os.path import join
 from sys import exit, argv
 
 try:
@@ -11,7 +11,7 @@ except:
 groupcat_URL = "http://www.illustris-project.org/api/" + SIM_NAME + \
                "/files/groupcat-135/?format=api" 
 sublink_URL = "http://www.illustris-project.org/api/" + SIM_NAME + \
-              "Illustris-3/files/sublink/?format=api" 
+              "/files/sublink/?format=api" 
 
 mkdir("trees")
 mkdir("trees/SubLink")
@@ -21,9 +21,9 @@ wget_path = 'wget'
 if system(wget_path) != 256:
     wget_path = raw_input("Please type the full path to the wget excutable: \n")
 
-chdir(join(getcwd(), "groups_135"))
+chdir("groups_135")
 system(wget_path + ' -nd -nc -nv -e robots=off -l 1 -r -A hdf5 --content-disposition --header="API-Key: 874387f0fbf3b68439b727ae5cdde978" ' + \
         groupcat_URL)
 chdir(join('..', 'trees', 'SubLink'))
-system(wget_path + '-nd -nc -nv -e robots=off -l 1 -r -A hdf5 --content-disposition --header="API-Key: 874387f0fbf3b68439b727ae5cdde978" ' + \
+system(wget_path + ' -nd -nc -nv -e robots=off -l 1 -r -A hdf5 --content-disposition --header="API-Key: 874387f0fbf3b68439b727ae5cdde978" ' + \
         sublink_URL)

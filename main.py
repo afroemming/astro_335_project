@@ -126,4 +126,4 @@ def test_get_merger_fraction():
             if len(a[j]) != 0:
                 print(i, a[j])
 
-#test_get_merger_fraction()
+test_get_merger_fraction()
