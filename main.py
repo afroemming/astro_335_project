@@ -21,13 +21,8 @@ SIM_NAME = 'Illustris-3' #We'll probably want to use Illustris-1, but that
 BASE_PATH = "."
 
 if __name__ == "__main__":
-    # Read commandline arguments
-    try:
-        BASE_PATH = argv[1]
-    except IndexError:
-        pass
     try: 
-        SIM_NAME = argv[2]
+        SIM_NAME = argv[1]
     except IndexError:
         pass
 
@@ -101,7 +96,9 @@ def get_subhalo_merger_tree(id, fields=[]):
                 n = f['NextProgenitorID'][n] - first_sh_id
        
         # move along main branch
-        if f['FirstProgenitorID'][first_progenitor_ID] != -1:
+        if f['FirstProgenitorID'][first_progenitor_ID] != -1: # If it is -1,
+            # it is telling us what there are no more progenitors, not the 
+            # location of the next
             n = f['FirstProgenitorID'][first_progenitor_ID] - first_sh_id
         first_progenitor_ID = n
     return mergers
