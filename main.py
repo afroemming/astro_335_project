@@ -47,7 +47,7 @@ def get(path, params=None):
     return r
 
 def get_subhalos_in_mass_range(target_mass, deviation,
-                               z = 0, limit=105):
+                               z = 0, limit=105, SIM_NAME=SIM_NAME):
     """
     Given a mass and deviation in group catalog units, return a search results for
     subhalos within that for a optionially specified z.
@@ -60,6 +60,12 @@ def get_subhalos_in_mass_range(target_mass, deviation,
     subhalos = get(url)
 
     return subhalos
+
+def get_parent_subhalos_in_range(target_mass, deviations, z = 0, limit=105, SIM_NAME=SIM_NAME):
+    parent_subhalos = {}
+    for subhalo in get_parent_subhalos_in_range['results']:
+        if get(subhalo['url'])['parent'] =  0:
+            parent_subhalos.append(subhalo)
 
 def get_subhalo_merger_tree(id, fields=[]):
     """
@@ -127,6 +133,3 @@ def test_get_merger_fraction():
         for j in a:
             if len(a[j]) != 0:
                 print(i, a[j])
-
-from pprint import pprint
-pprint(get_subhalo_merger_tree(1))
