@@ -62,9 +62,9 @@ def get_subhalos_in_mass_range(target_mass, deviation,
     return subhalos
 
 def get_parent_subhalos_in_range(target_mass, deviations, z = 0, limit=105, SIM_NAME=SIM_NAME):
-    parent_subhalos = {}
-    for subhalo in get_parent_subhalos_in_range['results']:
-        if get(subhalo['url'])['parent'] =  0:
+    parent_subhalos = []
+    for subhalo in get_subhalos_in_mass_range['results']:
+        if get(subhalo['url'])['parent'] ==  0:
             parent_subhalos.append(subhalo)
 
 def get_subhalo_merger_tree(id, fields=[]):
