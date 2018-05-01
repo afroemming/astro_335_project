@@ -63,7 +63,7 @@ def get_subhalos_in_mass_range(target_mass, deviation,
 
 def get_parent_subhalos_in_range(target_mass, deviations, z = 0, limit=105, SIM_NAME=SIM_NAME):
     parent_subhalos = []
-    for subhalo in get_subhalos_in_mass_range['results']:
+    for subhalo in get_subhalos_in_mass_range(target_mass, deviations, z = 0, limit=105, SIM_NAME=SIM_NAME)['results']:
         if get(subhalo['url'])['parent'] ==  0:
             parent_subhalos.append(subhalo)
 
